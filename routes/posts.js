@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const { v4: uuidv4 } = require('uuid');
 const passport = require('passport');
-const multer = require('multer');
+/*const multer = require('multer');
 const upload = multer ({dest: 'uploads/'});
 const cloudinary = require('cloudinary');
 const cloudinaryStorage = ('multer-storage-cloudinary');
@@ -16,6 +16,10 @@ var storage = cloudinaryStorage({
 
 var parser = multer({storage: storage});
 
+*/
+
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/' })
 
 const posts = []
 
@@ -55,7 +59,7 @@ const posts = []
   })
   
   //yksittäinen myynti-ilmoitus POST-------------------------------------------------------
-  router.post('/posts', passport.authenticate('jwt', {session: false}), upload.array('photos', 4), (req, res) => {
+  router.post('/posts', passport.authenticate('jwt', {session: false}), (req, res) => {
     console.log(req.body)
 
     const ID = uuidv4()
@@ -77,16 +81,21 @@ const posts = []
   })
 
   //kuvien lataus postaukseen
-  router.post('/posts/upload', passport.authenticate('jwt', {session: false}), parser.array('image', 4), function (req, res, next) {
+  router.post('/posts/upload', passport.authenticate('jwt', {session: false}),
+   upload.array('image', 4), function (req, res, next) {
     
-    //let foundIndex = posts.findIndex(p => p.postId == req.body.postID)
+    let foundIndex = posts.findIndex(p => p.postId == req.body.postID)
 
 
     console.log(req.files)
     console.log(req.body)
-    res.sendStatus(201)
+    console.log("FoundIndex: " + foundIndex)
+    
     res.json(req.files)
-    res.json(req.body)
+    //res.json(req.body)
+    //res.sendStatus(201)
+
+    
   })
   
   //yksittäinen myynti-ilmoitus PUT-------------------------------------------------------
