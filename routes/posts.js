@@ -2,11 +2,22 @@ const express = require('express')
 const router = express.Router()
 const { v4: uuidv4 } = require('uuid');
 const passport = require('passport');
+const multer = require('multer');
+const upload = multer ({dest: 'uploads/'});
+const cloudinary = require('cloudinary');
+const cloudinaryStorage = ('multer-storage-cloudinary');
+
+
+var storage = cloudinaryStorage({
+  cloudinary: cloudinary,
+  folder: '',
+  allowedFormats: ['jpg', 'png'],
+});
+
+var parser = multer({storage: storage});
 
 
 const posts = []
-
-
 
   //Selaa kaikki myynti-ilmoitukset-------------------------------------------------------
   router.get('/posts', (req, res) => {
@@ -44,22 +55,38 @@ const posts = []
   })
   
   //yksittäinen myynti-ilmoitus POST-------------------------------------------------------
-  router.post('/posts', passport.authenticate('jwt', {session: false}), (req, res) => {
+  router.post('/posts', passport.authenticate('jwt', {session: false}), upload.array('photos', 4), (req, res) => {
     console.log(req.body)
+
+    const ID = uuidv4()
   
     posts.push({
-      postId: uuidv4(),
+      postId: ID,
       description: req.body.description,
       category: req.body.category,
       location: req.body.location,
-      images: req.body.images,
+      images: [null, null, null, null],
       askingPrice: req.body.askingPrice,
       dateOfPosting: req.body.dateOfPosting,
       deliveryType: req.body.deliveryType,
       sellerInfo: req.body.sellerInfo
     })
   
+    res.send(ID)
     res.sendStatus(201)
+  })
+
+  //kuvien lataus postaukseen
+  router.post('/posts/upload', passport.authenticate('jwt', {session: false}), parser.array('image', 4), function (req, res, next) {
+    
+    //let foundIndex = posts.findIndex(p => p.postId == req.body.postID)
+
+
+    console.log(req.files)
+    console.log(req.body)
+    res.sendStatus(201)
+    res.json(req.files)
+    res.json(req.body)
   })
   
   //yksittäinen myynti-ilmoitus PUT-------------------------------------------------------
@@ -72,7 +99,7 @@ const posts = []
       foundPost.description = req.body.description,
       foundPost.category = req.body.category,
       foundPost.location = req.body.location,
-      foundPost.images = req.body.images,
+      //foundPost.images = req.body.images,
       foundPost.askingPrice = req.body.askingPrice,
       foundPost.dateOfPosting = req.body.dateOfPosting,
       foundPost.deliveryType = req.body.deliveryType,

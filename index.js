@@ -1,21 +1,19 @@
 
-
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
 const bcrypt = require('bcryptjs');
-const res = require('express/lib/response');
 const app = express();
-//HUOMportti pitää muuttaa ennen herokua
-const port = 3000;
+const port = 3000 //process.env.PORT;
 const posts = require("./routes/posts");
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const Skey = require('./key.json');
+
+
 
 
 app.use(bodyParser.json())
@@ -77,7 +75,7 @@ passport.use(new BasicStrategy(
 
   })
 
-  
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
