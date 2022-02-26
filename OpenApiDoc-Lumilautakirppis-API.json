@@ -1,0 +1,500 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Lumilautakirppis API",
+    "version": "1.0",
+    "description": "Lumilautailuun liittyvien tavaroiden myyntiin ja ostoon"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    },
+    {
+      "description": "",
+      "url": "https://lumilautakirppis-api.herokuapp.com/"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "summary": "Login with existing user",
+        "operationId": "post-login",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "303": {
+            "description": "See Other -> redirect to Main Page when successfully logged in"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        }
+      }
+    },
+    "login/registration/": {
+      "parameters": [],
+      "post": {
+        "summary": "Register new user",
+        "operationId": "post-user-registration",
+        "responses": {
+          "201": {
+            "description": "Created account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "userID": {
+                      "type": "integer",
+                      "readOnly": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "303": {
+            "description": "See Other -> redirect to Main Page when successfully registered and logged in"
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {}
+          }
+        },
+        "description": "Uuden käyttäjän rekisteröityminen",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userInfo": {
+                    "$ref": "#/components/schemas/User"
+                  },
+                  "loginCredentials": {
+                    "$ref": "#/components/schemas/LoginCredentials"
+                  }
+                },
+                "required": [
+                  "loginCredentials"
+                ]
+              },
+              "examples": {}
+            }
+          },
+          "description": "Käyttäjän tiedot"
+        }
+      }
+    },
+    "/posts/": {
+      "get": {
+        "summary": "Show users all posts",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "operationId": "get-user-posts-post",
+        "description": "Get all posts of logged in user"
+      },
+      "parameters": [],
+      "post": {
+        "summary": "Post new posting as logged in user",
+        "operationId": "post-user-posts",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/{postId}": {
+      "get": {
+        "summary": "Show users post by ID",
+        "tags": [],
+        "operationId": "get-user-posts-post",
+        "description": "get post by postId of logged in user",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "postId",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "put": {
+        "summary": "",
+        "operationId": "put-user-posts-postId",
+        "responses": {
+          "202": {
+            "description": "OK - updated succesfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostModel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "See Other -> redirect to login if not authorized"
+          }
+        },
+        "description": "modify post by postId of logged in user"
+      },
+      "delete": {
+        "summary": "",
+        "operationId": "delete-user-posts-postId",
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          }
+        },
+        "description": "delete post by postId of logged in user"
+      }
+    },
+    "/search": {
+      "get": {
+        "summary": "Search posts",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "operationId": "get-search",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "dateOfPosting": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "title": "User",
+        "type": "object",
+        "description": "",
+        "examples": [],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the given user."
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "homeAddress": {
+            "type": "string",
+            "example": "Esimerkkitie 34 A3"
+          },
+          "city": {
+            "type": "string",
+            "example": "Oulu"
+          },
+          "postCode": {
+            "type": "integer",
+            "example": 90100
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "example": "1997-10-31"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "description": "Set to true if the user's email has been verified."
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The date that the user was created."
+          }
+        },
+        "required": [
+          "id",
+          "firstName",
+          "lastName",
+          "homeAddress",
+          "city",
+          "postCode",
+          "email",
+          "emailVerified"
+        ]
+      },
+      "PostModel": {
+        "title": "PostModel",
+        "type": "object",
+        "description": "",
+        "examples": [
+          {
+            "description": "Capita DOA snowboard 158cm Wide",
+            "category": "Snowboards",
+            "location": {
+              "country": "Finland",
+              "city": "Helsinki",
+              "postCode": "00100"
+            },
+            "images": {
+              "image1": null,
+              "image2": null,
+              "image3": null,
+              "image4": null
+            },
+            "askingPrice": 500,
+            "dateOfPosting": "2019-08-24T14:15:22Z",
+            "deliveryType": {
+              "shipping": true,
+              "pickUp": true
+            },
+            "sellerInfo": {
+              "username": "Snoukkaboy_94",
+              "fullName": "Erkki Esimerkki",
+              "eMail": "erkki@esimerkki.com",
+              "phoneNum": 358401234567
+            }
+          },
+          {
+            "postId": "XXX123",
+            "description": "Capita DOA snowboard 158cm Wide",
+            "category": "Snowboards",
+            "location": {
+              "country": "Finland",
+              "city": "Helsinki",
+              "postCode": "00100"
+            },
+            "images": {
+              "image1": null,
+              "image2": null,
+              "image3": null,
+              "image4": null
+            },
+            "askingPrice": 500,
+            "dateOfPosting": "2019-08-24T14:15:22Z",
+            "deliveryType": {
+              "shipping": true,
+              "pickUp": true
+            },
+            "sellerInfo": {
+              "username": "Snoukkaboy_94",
+              "fullName": "Erkki Esimerkki",
+              "eMail": "erkki@esimerkki.com",
+              "phoneNum": 358401234567
+            }
+          }
+        ],
+        "properties": {
+          "description": {
+            "type": "string",
+            "example": "Capita DOA snowboard 158cm Wide",
+            "default": "Description"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "Snowboards",
+              "Boots",
+              "Bindings",
+              "Helmets",
+              "Clothes",
+              "Accessories",
+              "Others"
+            ]
+          },
+          "location": {
+            "type": "string"
+          },
+          "images": {
+            "type": "object",
+            "properties": {
+              "image1": {
+                "type": "null"
+              },
+              "image2": {
+                "type": "null"
+              },
+              "image3": {
+                "type": "null"
+              },
+              "image4": {
+                "type": "null"
+              }
+            }
+          },
+          "askingPrice": {
+            "type": "number",
+            "example": 500,
+            "minimum": 0
+          },
+          "dateOfPosting": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deliveryType": {
+            "type": "object",
+            "properties": {
+              "shipping": {
+                "type": "boolean"
+              },
+              "pickUp": {
+                "type": "boolean"
+              }
+            }
+          },
+          "sellerInfo": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string",
+                "example": "Snoukkaboy_94"
+              },
+              "fullName": {
+                "type": "string",
+                "example": "Erkki Esimerkki"
+              },
+              "eMail": {
+                "type": "string",
+                "format": "email",
+                "example": "erkki@esimerkki.com"
+              },
+              "phoneNum": {
+                "type": "number",
+                "example": 358401234567
+              }
+            },
+            "required": [
+              "username"
+            ]
+          }
+        },
+        "required": [
+          "askingPrice",
+          "deliveryType"
+        ]
+      },
+      "LoginCredentials": {
+        "title": "LoginCredentials",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "default": "Username"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "default": "Password",
+            "minLength": 8
+          },
+          "email": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "examples": [
+          {
+            "username": "Username",
+            "password": "Password",
+            "email": "example@mail.com"
+          }
+        ]
+      }
+    }
+  }
+}
