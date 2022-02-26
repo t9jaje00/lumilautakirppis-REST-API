@@ -23,6 +23,10 @@ const upload = multer({ dest: 'uploads/' })
 
 const posts = []
 
+router.get('/', (req, res) => {
+  res.send("Terve")
+})
+
   //Selaa kaikki myynti-ilmoitukset-------------------------------------------------------
   router.get('/posts', (req, res) => {
     console.log('Kaikki myynti-ilmoitukset')
