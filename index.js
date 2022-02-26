@@ -5,7 +5,6 @@ const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
 const bcrypt = require('bcryptjs');
 const app = express();
-const port = process.env.PORT || 80;
 const posts = require("./routes/posts");
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
@@ -14,7 +13,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const Skey = require('./key.json');
 
 
-
+app.set('port', (process.env.PORT || 80));
 
 app.use(bodyParser.json())
 
@@ -76,6 +75,6 @@ passport.use(new BasicStrategy(
   })
 
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+app.listen(app.get('port'), function() {
+  console.log(`Example app listening on port: `, app.get('port'));
+});
